@@ -6,3 +6,6 @@
 -Dagger <br>
 -Retrofit <br>
 -RxJava/RxAndroid <br>
+-BaseActivity/BaseFragment/BaseViewModel <br><br>
+
+Detailled Readme of this project including all described components above coming soon...

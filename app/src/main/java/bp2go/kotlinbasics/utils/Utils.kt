@@ -15,12 +15,14 @@ import android.support.v7.app.AppCompatActivity
 // Platzhalter func() hinzufügen, z.B. add() oder replace()
 inline fun FragmentManager.inTransaction3(func: FragmentTransaction.() -> FragmentTransaction) {
      beginTransaction().func().commit()
-
     /*equivalent to
     val fragmentTransaction = beginTransaction()
     fragmentTransaction.func()
     fragmentTransaction.commit()
     */
+}
+
+inline fun FragmentManager.inTransactionChild(func: FragmentTransaction.() -> FragmentTransaction){
 
 }
 

@@ -1,5 +1,9 @@
 package bp2go.kotlinbasics.injection.module
 
+import android.app.Application
+import android.arch.persistence.room.Room
+import bp2go.kotlinbasics.model.local.UserDao
+import bp2go.kotlinbasics.model.local.UserDatabase
 import bp2go.kotlinbasics.model.network.PostApi
 import bp2go.kotlinbasics.model.network.UserWebservice
 import bp2go.kotlinbasics.utils.BASE_URL
@@ -17,6 +21,22 @@ import retrofit2.converter.gson.GsonConverterFactory
 @Suppress("unused")
 object NetworkModule{
 
+    // --- DATABASE INJECTION ---
+    @Provides
+    @Reusable
+    internal fun provideUserProfilDatabase(application: Application) : UserDatabase{
+        return Room.databaseBuilder(application,
+                UserDatabase::class.java, "UserDatabase.db")
+                .build()
+    }
+
+    @Provides
+    @Reusable
+    internal fun provideUserDao(userDatabase: UserDatabase): UserDao{
+        return userDatabase.userDao()
+    }
+
+    // --- RETROFIT + GSON + SERVICES ---
     @Provides
     @JvmStatic
     @Reusable

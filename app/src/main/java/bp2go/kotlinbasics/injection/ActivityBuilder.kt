@@ -1,6 +1,7 @@
 package bp2go.kotlinbasics.injection
 
 import bp2go.kotlinbasics.view.MainActivity
+import bp2go.kotlinbasics.view.user.UserProfilFragmentProvider
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -8,7 +9,7 @@ import dagger.android.ContributesAndroidInjector
 abstract class ActivityBuilder {
 
 
-@ContributesAndroidInjector
+@ContributesAndroidInjector(modules = arrayOf(UserProfilFragmentProvider::class))
 abstract fun bindMainActivity(): MainActivity
 
 }

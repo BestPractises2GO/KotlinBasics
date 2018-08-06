@@ -1,9 +1,10 @@
-package bp2go.kotlinbasics.model
+package bp2go.kotlinbasics.model.local
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
-import bp2go.kotlinbasics.model.local.UserDao
+import bp2go.kotlinbasics.model.DateConverter
+import bp2go.kotlinbasics.model.User
 
 @Database(entities = arrayOf(User::class), version = 1)
 @TypeConverters(DateConverter::class)

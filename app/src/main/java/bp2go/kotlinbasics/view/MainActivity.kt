@@ -15,9 +15,10 @@ import java.util.concurrent.TimeUnit
 
 import bp2go.kotlinbasics.utils.edit3
 import bp2go.kotlinbasics.utils.inTransaction3
+import bp2go.kotlinbasics.view.base.BaseActivity
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
 
 

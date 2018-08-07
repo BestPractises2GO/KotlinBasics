@@ -8,5 +8,5 @@ abstract class UserProfilFragmentProvider {
 
 
     @ContributesAndroidInjector
-    abstract fun bindShowUserFragment(): showUserFragment
+    abstract fun bindShowUserFragment(): ShowUserFragment
 }

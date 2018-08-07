@@ -50,7 +50,14 @@
         android:layout_below="@id/titleText"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
     <FrameLayout
+        android:layout_below="@id/authorText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/frame1"/>
+    <Button
+        android:layout_below="@id/frame1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="goTo API Service"
+        android:id="@+id/button_goto_service"/>
 </RelativeLayout>

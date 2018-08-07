@@ -11,12 +11,17 @@ import bp2go.kotlinbasics.R
 import bp2go.kotlinbasics.view.base.BaseFragment
 
 
-class showUserFragment : BaseFragment() {
+class ShowUserFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_show_user, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
     }
 
 

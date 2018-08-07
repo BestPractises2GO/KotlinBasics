@@ -1,14 +1,24 @@
 package bp2go.kotlinbasics.view.base
 
 import android.app.Activity
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Build
 
 import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.DaggerFragment
+import javax.inject.Inject
+import android.icu.lang.UCharacter.GraphemeClusterBreak.V
 
-open class BaseFragment : DaggerFragment() {
 
+//V: BaseViewModel = Wird mit vererbung benötigt, damit man die ViewModelProvider.Factory Methoden auf "V" mit dem Supertyp ViewModel()
+//anwenden kann
+ abstract class BaseFragment<V: BaseViewModel> : DaggerFragment() {
+    @Inject
+    lateinit var mViewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var viewModel: V
     /*
     @Inject
     DispatchingAndroidInjector<Fragment> childFragmentInjector;
@@ -30,7 +40,22 @@ open class BaseFragment : DaggerFragment() {
             AndroidSupportInjection.inject(this);
         }
         super.onAttach(context)
+        viewModel = ViewModelProviders.of(this, mViewModelFactory).get(getViewModel())
     }
+
+
+    /**
+     * Override for set view model
+     *
+     * @return view model instance
+     */
+    abstract fun getViewModel(): Class<V>
+
+    /*
+         fun getViewModel(): Class<out Int>{
+        return V::class.java
+    }
+     */
 
     /*
     @Override

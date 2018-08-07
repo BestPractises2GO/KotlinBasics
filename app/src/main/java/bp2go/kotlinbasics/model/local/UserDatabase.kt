@@ -6,7 +6,7 @@ import android.arch.persistence.room.TypeConverters
 import bp2go.kotlinbasics.model.DateConverter
 import bp2go.kotlinbasics.model.User
 
-@Database(entities = arrayOf(User::class), version = 1)
+@Database(entities = arrayOf(User::class), version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract class UserDatabase : RoomDatabase() {
 

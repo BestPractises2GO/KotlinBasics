@@ -8,18 +8,8 @@ import dagger.android.DaggerApplication
 
 class App : DaggerApplication() {
 
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        @JvmStatic
-        var context : Context? = null
-    }
-
-
-
     override fun onCreate() {
         super.onCreate()
-
-        context = applicationContext
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {

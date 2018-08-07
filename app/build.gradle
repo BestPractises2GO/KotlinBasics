@@ -53,7 +53,6 @@ dependencies {
 
     // LiveData & ViewModel
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
-    kapt "android.arch.lifecycle:compiler:1.1.1"
 
     //Room
     implementation "android.arch.persistence.room:runtime:1.1.1"

@@ -11,7 +11,10 @@ import bp2go.kotlinbasics.R
 import bp2go.kotlinbasics.view.base.BaseFragment
 
 
-class ShowUserFragment : BaseFragment() {
+class ShowUserFragment : BaseFragment<UserProfileViewModel>() {
+    override fun getViewModel(): Class<UserProfileViewModel> {
+        return UserProfileViewModel::class.java
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -21,7 +24,6 @@ class ShowUserFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
     }
 
 

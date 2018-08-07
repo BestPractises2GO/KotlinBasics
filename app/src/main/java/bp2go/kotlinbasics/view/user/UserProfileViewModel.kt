@@ -6,9 +6,10 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModel
 import bp2go.kotlinbasics.model.User
 import bp2go.kotlinbasics.model.UserRepository
+import bp2go.kotlinbasics.view.base.BaseViewModel
 import javax.inject.Inject
 
-class UserProfileViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
+class UserProfileViewModel @Inject constructor(private val userRepository: UserRepository) : BaseViewModel() {
 
     private var user: LiveData<User>? = null
 

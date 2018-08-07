@@ -1,5 +1,6 @@
 package bp2go.kotlinbasics.model
 
+import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.widget.Toast
 import bp2go.kotlinbasics.App
@@ -14,7 +15,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserRepository @Inject constructor(val webservice: UserWebservice, val userDao: UserDao, val executor: Executor){
+class UserRepository @Inject constructor(val webservice: UserWebservice, val userDao: UserDao, val executor: Executor, val app: Application){
 
     private val FRESH_TIMEOUT_IN_MINUTES = 3;
 
@@ -35,7 +36,7 @@ class UserRepository @Inject constructor(val webservice: UserWebservice, val use
                     }
 
                     override fun onResponse(call: Call<User>?, response: Response<User>?) {
-                        Toast.makeText(App.context, "Daten vom Netzwerk aktualisiert", Toast.LENGTH_LONG).show()
+                        Toast.makeText(app, "Daten vom Netzwerk aktualisiert", Toast.LENGTH_LONG).show()
                         val user: User? = response?.body()
                         user?.lastRefresh = Date()
                         userDao.save(user)

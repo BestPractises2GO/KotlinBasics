@@ -9,11 +9,11 @@ import bp2go.kotlinbasics.model.UserRepository
 import bp2go.kotlinbasics.view.base.BaseViewModel
 import javax.inject.Inject
 
-class UserProfileViewModel @Inject constructor(private val userRepository: UserRepository) : BaseViewModel() {
+class UserProfileViewModel @Inject constructor(application: Application, private val userRepository: UserRepository) : BaseViewModel(application) {
 
     private var user: LiveData<User>? = null
 
-    fun init(userId: String)  = if(this.user != null) println("user bereits init."); else user = userRepository.getUser(userId)
+    fun init(userId: String?)  = if(this.user != null) println("user bereits init."); else user = userRepository.getUser(userId)
 
     fun getUser()  = user
 

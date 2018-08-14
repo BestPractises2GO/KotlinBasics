@@ -2,6 +2,7 @@ package bp2go.kotlinbasics.model
 
 import android.app.Application
 import android.arch.lifecycle.LiveData
+import android.util.Log
 import android.widget.Toast
 import bp2go.kotlinbasics.App
 import bp2go.kotlinbasics.model.local.UserDao
@@ -20,26 +21,29 @@ class UserRepository @Inject constructor(val webservice: UserWebservice, val use
     private val FRESH_TIMEOUT_IN_MINUTES = 3;
 
 
-    fun getUser(userLogin: String) : LiveData<User> {
+    fun getUser(userLogin: String?) : LiveData<User> {
         refreshUser(userLogin)
         return userDao.load(userLogin)
     }
 
-    fun refreshUser(userLogin: String) : Unit{
+    fun refreshUser(userLogin: String?) : Unit{
         executor.execute{
             val userExists: Boolean = (userDao.hasUser(userLogin, getMaxRefreshTime(Date())) != null)
 
             if (!userExists) {
                 webservice.getUser(userLogin).enqueue(object : Callback<User> {
                     override fun onFailure(call: Call<User>?, t: Throwable?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        Log.i("api", t.toString())
                     }
 
                     override fun onResponse(call: Call<User>?, response: Response<User>?) {
                         Toast.makeText(app, "Daten vom Netzwerk aktualisiert", Toast.LENGTH_LONG).show()
+                        Log.i("api", response?.body()?.name)
+                        executor.execute{
                         val user: User? = response?.body()
                         user?.lastRefresh = Date()
-                        userDao.save(user)
+                        userDao.save(user!!)
+                        }
                     }
 
                 })

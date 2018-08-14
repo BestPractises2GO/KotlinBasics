@@ -18,7 +18,7 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.V
     @Inject
     lateinit var mViewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var viewModel: V
+    protected lateinit var viewModel: V
     /*
     @Inject
     DispatchingAndroidInjector<Fragment> childFragmentInjector;

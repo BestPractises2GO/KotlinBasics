@@ -8,5 +8,5 @@ import retrofit2.http.Path
 interface UserWebservice {
 
     @GET("/users/{user}")
-    fun getUser(@Path("user") userId: String): Call<User>
+    fun getUser(@Path("user") userId: String?): Call<User>
 }

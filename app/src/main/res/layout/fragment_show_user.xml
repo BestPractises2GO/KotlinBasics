@@ -22,6 +22,7 @@
     android:id="@+id/blog_user"/>
 
     <ImageView
+        android:id="@+id/avatar_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView

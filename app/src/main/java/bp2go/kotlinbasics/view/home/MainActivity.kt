@@ -1,12 +1,12 @@
-package bp2go.kotlinbasics.view
+package bp2go.kotlinbasics.view.home
 
 
+import android.content.res.Configuration
 import android.os.Bundle
 import bp2go.kotlinbasics.R
 import bp2go.kotlinbasics.utils.addFragment
 import bp2go.kotlinbasics.view.base.BaseActivity
-import bp2go.kotlinbasics.view.user.ShowUserFragment
-import bp2go.kotlinbasics.view.user.TabsHomeFragment
+import bp2go.kotlinbasics.view.home.user.ShowUserFragment
 
 
 class MainActivity : BaseActivity() {

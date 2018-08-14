@@ -1,4 +1,4 @@
-package bp2go.kotlinbasics.view
+package bp2go.kotlinbasics.view.home.parta
 
 
 import android.os.Bundle

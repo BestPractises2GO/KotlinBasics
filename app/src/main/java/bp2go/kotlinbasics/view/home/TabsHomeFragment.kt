@@ -1,20 +1,20 @@
-package bp2go.kotlinbasics.view.user
+package bp2go.kotlinbasics.view.home
 
 
 import android.os.Bundle
-import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
 import bp2go.kotlinbasics.R
-import bp2go.kotlinbasics.view.PartaFragment
+import bp2go.kotlinbasics.view.home.parta.PartaFragment
 import bp2go.kotlinbasics.view.adapter.TabAdapter
-import bp2go.kotlinbasics.view.rxjava.RxJavaExamplesFragment
+import bp2go.kotlinbasics.view.home.rxjava.RxJavaExamplesFragment
+import bp2go.kotlinbasics.view.home.user.ShowUserFragment
 import kotlinx.android.synthetic.main.fragment_tabs_home.*
-import kotlinx.android.synthetic.main.fragment_tabs_home.view.*
 
 
 class TabsHomeFragment : Fragment() {
@@ -54,6 +54,20 @@ class TabsHomeFragment : Fragment() {
 
         //ViewPager Adapter erhält TabAdapter mit den Fragmenten, die innerhalb des TabAdapter hinzugefügt worden sind
         viewPager.adapter = tabAdapter
+    }
+
+
+    private val SELECTED_TAB ="TabPosition"
+    private var mPosition:Int = 0
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(SELECTED_TAB, mPosition)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        mPosition = savedInstanceState!!.getInt(SELECTED_TAB)
     }
 
 

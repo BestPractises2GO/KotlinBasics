@@ -1,7 +1,7 @@
 package bp2go.kotlinbasics.injection
 
-import bp2go.kotlinbasics.view.MainActivity
-import bp2go.kotlinbasics.view.user.UserProfilFragmentProvider
+import bp2go.kotlinbasics.view.home.MainActivity
+import bp2go.kotlinbasics.view.home.user.UserProfilFragmentProvider
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

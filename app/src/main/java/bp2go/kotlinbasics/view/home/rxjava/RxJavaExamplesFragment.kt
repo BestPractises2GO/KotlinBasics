@@ -1,4 +1,4 @@
-package bp2go.kotlinbasics.view.rxjava
+package bp2go.kotlinbasics.view.home.rxjava
 
 
 import android.os.Bundle
@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import bp2go.kotlinbasics.R
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_rx_java_examples.*
 import java.util.concurrent.TimeUnit
 

@@ -1,9 +1,7 @@
-package bp2go.kotlinbasics.view.user
+package bp2go.kotlinbasics.view.home.user
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.ViewModel
 import bp2go.kotlinbasics.model.User
 import bp2go.kotlinbasics.model.UserRepository
 import bp2go.kotlinbasics.view.base.BaseViewModel

@@ -3,8 +3,11 @@ package bp2go.kotlinbasics.view.home
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.util.Log
 import bp2go.kotlinbasics.R
 import bp2go.kotlinbasics.utils.addFragment
+import bp2go.kotlinbasics.utils.addFragmentTag
 import bp2go.kotlinbasics.view.base.BaseActivity
 import bp2go.kotlinbasics.view.home.user.ShowUserFragment
 
@@ -16,10 +19,10 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        addFragment(TabsHomeFragment(), R.id.frame1)
         setContentView(R.layout.activity_main)
+        addFragOnce(TabsHomeFragment(), "tabsHome")
 
-
+        Log.i("tablayout","onCreate() Main")
         //String an Bundle hinzufügen und dann an Fragment hinzufügen
         //ToDo: mit Extension verkürzen, da wiederkehrende Situation
         val bundle:Bundle = Bundle()
@@ -32,6 +35,13 @@ class MainActivity : BaseActivity() {
                 .load()
                 .into()
                 */
+    }
+
+    fun addFragOnce(fragment: Fragment, tag: String){
+       // supportFragmentManager.executePendingTransactions()
+        if(supportFragmentManager.findFragmentByTag(tag) == null){
+            addFragmentTag(fragment, R.id.frame1, tag)
+        }
     }
 
 

@@ -1,8 +1,10 @@
 package bp2go.kotlinbasics.view.home
 
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
 import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +17,7 @@ import bp2go.kotlinbasics.view.adapter.TabAdapter
 import bp2go.kotlinbasics.view.home.rxjava.RxJavaExamplesFragment
 import bp2go.kotlinbasics.view.home.user.ShowUserFragment
 import kotlinx.android.synthetic.main.fragment_tabs_home.*
+import kotlinx.android.synthetic.main.fragment_tabs_home.view.*
 
 
 class TabsHomeFragment : Fragment() {
@@ -22,30 +25,45 @@ class TabsHomeFragment : Fragment() {
 
     private lateinit var tabAdapter: TabAdapter
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         //Layout muss in eine Variable gespeichert werden, und über diese Variable werden
         //ViewPager und TabLayout aufgerufen, ansonsten erscheint eine NPE
-        val tabView =  inflater.inflate(R.layout.fragment_tabs_home, container, false)
-
-        return tabView
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        val view =  inflater.inflate(R.layout.fragment_tabs_home, container, false)
+        Log.i("tablayout","onCreateView()")
 
         //Initialisiere TabAdapter mit childFragmentManager, weil man Fragmente aus einem Fragment öffnet
         //über Activity wäre es dann der supportFragmentMAnager
         tabAdapter = TabAdapter(childFragmentManager)
         //ScreenPageLimit für höhere Performanz
-        view_pager.offscreenPageLimit = 3
-        addFragmentsToViewPager(view_pager)
+        view.view_pager.offscreenPageLimit = 3
+        addFragmentsToViewPager(view.view_pager)
         //Füge dem Tablayout den ViewPager zu
-        home_tabLayout.setupWithViewPager(view_pager)
+        view.home_tabLayout.setupWithViewPager(view.view_pager)
 
-
+        return view
     }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        Log.i("tablayout","onActivityCreated()")
+
+        //Bei Orientation Change wird überprüft ob savedInstanceSTate Daten enthält
+        if(savedInstanceState != null){
+            with(savedInstanceState){
+                mPosition = getInt(SELECTED_TAB)
+            }
+            Log.i("tablayout", mPosition.toString())
+        }
+    }
+
+
 
     fun addFragmentsToViewPager(viewPager: ViewPager){
         tabAdapter.addFragment(ShowUserFragment(), "Room")
@@ -57,17 +75,19 @@ class TabsHomeFragment : Fragment() {
     }
 
 
-    private val SELECTED_TAB ="TabPosition"
-    private var mPosition:Int = 0
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(SELECTED_TAB, mPosition)
+    companion object {
+        private val SELECTED_TAB ="TabPosition"
+        private var mPosition:Int? = 0
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
 
-        mPosition = savedInstanceState!!.getInt(SELECTED_TAB)
+    override fun onSaveInstanceState(outState: Bundle) {
+        mPosition?.let { outState.putInt(SELECTED_TAB, it) }
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
 

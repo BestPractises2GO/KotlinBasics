@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import bp2go.kotlinbasics.R
+import bp2go.kotlinbasics.view.base.BaseFragment
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_rx_java_examples.*
@@ -15,7 +16,9 @@ import java.util.concurrent.TimeUnit
 
 
 
-class RxJavaExamplesFragment : Fragment() {
+class RxJavaExamplesFragment : BaseFragment<RxJavaExamplesViewModel>() {
+    override fun getViewModel(): Class<RxJavaExamplesViewModel>  = RxJavaExamplesViewModel::class.java
+
     var ob = Observable.fromArray(1,2,3,4,5)
     var Ob2 = Observable.just("Hello World Ob")
 

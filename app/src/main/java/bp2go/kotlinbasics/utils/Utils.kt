@@ -36,6 +36,14 @@ fun AppCompatActivity.addFragment(fragment: Fragment, frameId: Int){
     supportFragmentManager.inTransaction3 { add(frameId, fragment) }
 }
 
+fun AppCompatActivity.addFragmentTag(fragment: Fragment, frameId: Int, tag: String){
+    supportFragmentManager.inTransaction3 { add(frameId, fragment, tag) }
+}
+
 fun AppCompatActivity.replaceFragment(fragment: Fragment, frameId: Int) {
     supportFragmentManager.inTransaction3{replace(frameId, fragment)}
+}
+
+fun AppCompatActivity.replaceFragmentTag(fragment: Fragment, frameId: Int, tag: String) {
+    supportFragmentManager.inTransaction3{replace(frameId, fragment,tag)}
 }

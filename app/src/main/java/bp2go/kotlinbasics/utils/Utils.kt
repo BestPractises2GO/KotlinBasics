@@ -2,11 +2,17 @@ package bp2go.kotlinbasics.utils
 
 
 
+import android.content.Context
 import android.content.SharedPreferences
+import android.support.annotation.LayoutRes
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
 
 //FragmentTransaction.() = func() kann von Fragmenttransaction Methoden aufgerufen werden
 //FragmentTransaction = der Paramter hinter -> bedeutet, dass man nach func() FragmentTransaction Methoden aufrufen kann
@@ -32,6 +38,11 @@ inline fun SharedPreferences.edit3(func: SharedPreferences.Editor.() -> Unit) {
     editor.apply()
 }
 
+//Recyclerview LayoutInflater
+fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false ): View {
+    return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
+}
+
 fun AppCompatActivity.addFragment(fragment: Fragment, frameId: Int){
     supportFragmentManager.inTransaction3 { add(frameId, fragment) }
 }
@@ -47,3 +58,8 @@ fun AppCompatActivity.replaceFragment(fragment: Fragment, frameId: Int) {
 fun AppCompatActivity.replaceFragmentTag(fragment: Fragment, frameId: Int, tag: String) {
     supportFragmentManager.inTransaction3{replace(frameId, fragment,tag)}
 }
+
+fun Any.toast(message: String, context: Context, duration: Int = Toast.LENGTH_LONG) {
+      Toast.makeText(context,message,duration).apply { show()}
+}
+

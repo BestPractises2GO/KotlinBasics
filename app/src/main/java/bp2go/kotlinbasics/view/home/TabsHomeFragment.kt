@@ -16,12 +16,12 @@ import bp2go.kotlinbasics.view.home.parta.PartaFragment
 import bp2go.kotlinbasics.view.adapter.TabAdapter
 import bp2go.kotlinbasics.view.home.rxjava.RxJavaExamplesFragment
 import bp2go.kotlinbasics.view.home.user.ShowUserFragment
+import bp2go.kotlinbasics.view.home.userlist.UserListFragment
 import kotlinx.android.synthetic.main.fragment_tabs_home.*
 import kotlinx.android.synthetic.main.fragment_tabs_home.view.*
 
 
 class TabsHomeFragment : Fragment() {
-
 
     private lateinit var tabAdapter: TabAdapter
 
@@ -42,7 +42,7 @@ class TabsHomeFragment : Fragment() {
         //über Activity wäre es dann der supportFragmentMAnager
         tabAdapter = TabAdapter(childFragmentManager)
         //ScreenPageLimit für höhere Performanz
-        view.view_pager.offscreenPageLimit = 3
+        view.view_pager.offscreenPageLimit = 4
         addFragmentsToViewPager(view.view_pager)
         //Füge dem Tablayout den ViewPager zu
         view.home_tabLayout.setupWithViewPager(view.view_pager)
@@ -69,16 +69,17 @@ class TabsHomeFragment : Fragment() {
         tabAdapter.addFragment(ShowUserFragment(), "Room")
         tabAdapter.addFragment(PartaFragment(), "Parta")
         tabAdapter.addFragment(RxJavaExamplesFragment(), "Rx Beispiele")
+        tabAdapter.addFragment(UserListFragment(), "Recycler")
 
         //ViewPager Adapter erhält TabAdapter mit den Fragmenten, die innerhalb des TabAdapter hinzugefügt worden sind
         viewPager.adapter = tabAdapter
     }
 
 
-    companion object {
+
         private val SELECTED_TAB ="TabPosition"
         private var mPosition:Int? = 0
-    }
+
 
 
     override fun onSaveInstanceState(outState: Bundle) {

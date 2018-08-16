@@ -77,7 +77,7 @@ class RxJavaExamplesFragment : BaseFragment<RxJavaExamplesViewModel>() {
         observable()
         //Beispiel Lambda Aufruf
         t1(10) { i -> i+2 }
-        println(t2(10) {i -> i+3 })
+        println(t2(10) { i -> i+3 })
         println(t3(10) {i -> i+4 })
 
         /*

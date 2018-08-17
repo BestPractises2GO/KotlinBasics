@@ -13,11 +13,17 @@ import android.widget.Toast
 import bp2go.kotlinbasics.R
 import bp2go.kotlinbasics.utils.toast
 import bp2go.kotlinbasics.view.adapter.ListUserAdapter
+import bp2go.kotlinbasics.view.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_user_list.view.*
 import javax.inject.Inject
 
 
-class UserListFragment : Fragment() {
+class UserListFragment : BaseFragment<UserListViewModel>() {
+
+    override fun getViewModel(): Class<UserListViewModel> {
+        return UserListViewModel::class.java
+    }
+
     val users = ArrayList<String>()
 
 

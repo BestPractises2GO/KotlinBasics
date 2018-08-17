@@ -4,6 +4,7 @@ import android.app.Application
 import android.arch.persistence.room.Room
 import bp2go.kotlinbasics.model.local.UserDao
 import bp2go.kotlinbasics.model.local.UserDatabase
+import bp2go.kotlinbasics.model.network.GithubService
 import bp2go.kotlinbasics.model.network.PostApi
 import bp2go.kotlinbasics.model.network.UserWebservice
 import bp2go.kotlinbasics.utils.BASE_URL
@@ -54,6 +55,12 @@ class NetworkModule{
     @Reusable
     internal fun provideUserWebservice(retrofit: Retrofit): UserWebservice{
         return retrofit.create(UserWebservice::class.java)
+    }
+
+    @Provides
+    @Reusable
+    internal fun provideGithubService(retrofit: Retrofit): GithubService{
+        return retrofit.create(GithubService::class.java)
     }
 
     @Provides

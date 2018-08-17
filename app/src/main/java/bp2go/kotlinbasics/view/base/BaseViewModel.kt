@@ -10,6 +10,7 @@ abstract class BaseViewModel(application: Application, val mCompositeDisposable:
     fun getCompositeDisposable() = mCompositeDisposable
 
     override fun onCleared() {
+        super.onCleared()
         mCompositeDisposable.clear()
         super.onCleared()
     }

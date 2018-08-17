@@ -22,8 +22,8 @@ class UserRepository @Inject constructor(val webservice: UserWebservice, val use
 
 
     fun getUser(userLogin: String?) : LiveData<User> {
-        refreshUser(userLogin)
-        return userDao.load(userLogin)
+        refreshUser(userLogin) //Lade von REST API wenn Bedinungen ok
+        return userDao.load(userLogin) //Lade Daten am Ende immer von Datenbank
     }
 
     fun refreshUser(userLogin: String?) : Unit{

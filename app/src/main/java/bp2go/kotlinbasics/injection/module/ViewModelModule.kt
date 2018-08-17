@@ -6,6 +6,7 @@ import bp2go.kotlinbasics.injection.ViewModelFactory
 import bp2go.kotlinbasics.injection.ViewModelKey
 import bp2go.kotlinbasics.view.home.rxjava.RxJavaExamplesViewModel
 import bp2go.kotlinbasics.view.home.user.UserProfileViewModel
+import bp2go.kotlinbasics.view.home.userlist.UserListViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -21,6 +22,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(RxJavaExamplesViewModel::class)
     abstract fun bindsRxJavaExamplesViewModel(rxJavaViewModel: RxJavaExamplesViewModel) : ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(UserListViewModel::class)
+    abstract fun provideUserListViewModel(userListViewModel: UserListViewModel) : ViewModel
 
     //Factory binden
     @Binds

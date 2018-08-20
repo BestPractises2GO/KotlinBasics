@@ -16,7 +16,7 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.V
 //anwenden kann
  abstract class BaseFragment<V: BaseViewModel> : DaggerFragment() {
     @Inject
-    lateinit var mViewModelFactory: ViewModelProvider.Factory
+    protected lateinit var mViewModelFactory: ViewModelProvider.Factory
 
     protected lateinit var viewModel: V
     /*
@@ -29,7 +29,7 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.V
         // Perform injection here for versions before M as onAttach(*Context*) did not yet exist
         // This fixes DaggerFragment issue: https://github.com/google/dagger/issues/777
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            AndroidSupportInjection.inject(this);
+            AndroidSupportInjection.inject(this)
         }
         super.onAttach(activity)
     }
@@ -37,7 +37,7 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.V
     override fun onAttach(context: Context?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Perform injection here for M (API 23) due to deprecation of onAttach(*Activity*)
-            AndroidSupportInjection.inject(this);
+            AndroidSupportInjection.inject(this)
         }
         super.onAttach(context)
         viewModel = ViewModelProviders.of(this, mViewModelFactory).get(getViewModel())

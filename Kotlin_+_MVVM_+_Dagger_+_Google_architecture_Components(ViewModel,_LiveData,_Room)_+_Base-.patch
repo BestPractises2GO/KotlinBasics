@@ -1,0 +1,328 @@
+Index: app/src/main/java/bp2go/kotlinbasics/injection/module/NetworkModule.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/injection/module/NetworkModule.kt	(revision be57ddfbd2b5be034333f7bc08b9669316cd52bb)
++++ app/src/main/java/bp2go/kotlinbasics/injection/module/NetworkModule.kt	(date 1534505762068)
+@@ -4,6 +4,7 @@
+ import android.arch.persistence.room.Room
+ import bp2go.kotlinbasics.model.local.UserDao
+ import bp2go.kotlinbasics.model.local.UserDatabase
++import bp2go.kotlinbasics.model.network.GithubService
+ import bp2go.kotlinbasics.model.network.PostApi
+ import bp2go.kotlinbasics.model.network.UserWebservice
+ import bp2go.kotlinbasics.utils.BASE_URL
+@@ -56,6 +57,12 @@
+         return retrofit.create(UserWebservice::class.java)
+     }
+ 
++    @Provides
++    @Reusable
++    internal fun provideGithubService(retrofit: Retrofit): GithubService{
++        return retrofit.create(GithubService::class.java)
++    }
++
+     @Provides
+     @Reusable
+     internal fun provideGeson() : Gson {
+Index: app/src/main/java/bp2go/kotlinbasics/injection/module/ViewModelModule.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/injection/module/ViewModelModule.kt	(revision be57ddfbd2b5be034333f7bc08b9669316cd52bb)
++++ app/src/main/java/bp2go/kotlinbasics/injection/module/ViewModelModule.kt	(date 1534511608535)
+@@ -6,6 +6,7 @@
+ import bp2go.kotlinbasics.injection.ViewModelKey
+ import bp2go.kotlinbasics.view.home.rxjava.RxJavaExamplesViewModel
+ import bp2go.kotlinbasics.view.home.user.UserProfileViewModel
++import bp2go.kotlinbasics.view.home.userlist.UserListViewModel
+ import dagger.Binds
+ import dagger.Module
+ import dagger.multibindings.IntoMap
+@@ -22,6 +23,11 @@
+     @ViewModelKey(RxJavaExamplesViewModel::class)
+     abstract fun bindsRxJavaExamplesViewModel(rxJavaViewModel: RxJavaExamplesViewModel) : ViewModel
+ 
++    @Binds
++    @IntoMap
++    @ViewModelKey(UserListViewModel::class)
++    abstract fun provideUserListViewModel(userListViewModel: UserListViewModel) : ViewModel
++
+     //Factory binden
+     @Binds
+     abstract fun bindViewModelFactory(factory: ViewModelFactory) : ViewModelProvider.Factory
+Index: app/src/main/java/bp2go/kotlinbasics/model/datasource/UsersDataSource.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/model/datasource/UsersDataSource.kt	(date 1534509287566)
++++ app/src/main/java/bp2go/kotlinbasics/model/datasource/UsersDataSource.kt	(date 1534509287566)
+@@ -0,0 +1,45 @@
++package bp2go.kotlinbasics.model.datasource
++
++import android.arch.paging.ItemKeyedDataSource
++import android.util.Log
++import bp2go.kotlinbasics.model.User
++import bp2go.kotlinbasics.model.User2
++import bp2go.kotlinbasics.model.network.GithubService
++import io.reactivex.android.schedulers.AndroidSchedulers
++import io.reactivex.disposables.CompositeDisposable
++import io.reactivex.schedulers.Schedulers
++import javax.inject.Inject
++
++class UsersDataSource(private val githubService: GithubService, private val compositeDisposable: CompositeDisposable): ItemKeyedDataSource<Long, User2>() {
++
++    /*
++    You maybe wonder why i don’t use one of Rx most powerful features which specify the threads i want to work in or observe on.
++    after some analysis i realize that the load methods called on background thread provided by Paging.
++    The problem is you get the data on thread and load methods called on another thread.
++     */
++    override fun loadInitial(params: LoadInitialParams<Long>, callback: LoadInitialCallback<User2>) {
++        compositeDisposable.add(githubService.getUsers(1, params.requestedLoadSize)
++                .subscribe(
++                        {users -> callback.onResult(users)},
++                        {throwable -> Log.i("apierr", throwable.message) }
++                ))
++    }
++
++    override fun loadAfter(params: LoadParams<Long>, callback: LoadCallback<User2>) {
++        compositeDisposable.add(githubService.getUsers(params.key, params.requestedLoadSize)
++                .subscribe (
++                        {users -> callback.onResult(users)},
++                        {throwable ->  Log.i("apierr",throwable.message)}
++                ))
++    }
++
++    override fun loadBefore(params: LoadParams<Long>, callback: LoadCallback<User2>) {
++        //wird nicht gebraucht für den UseCase
++    }
++
++    override fun getKey(item: User2): Long {
++        return item.id
++    }
++
++
++}
+\ No newline at end of file
+Index: app/src/main/java/bp2go/kotlinbasics/model/datasource/UsersDataSourceFactory.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/model/datasource/UsersDataSourceFactory.kt	(date 1534510002813)
++++ app/src/main/java/bp2go/kotlinbasics/model/datasource/UsersDataSourceFactory.kt	(date 1534510002813)
+@@ -0,0 +1,18 @@
++package bp2go.kotlinbasics.model.datasource
++
++import android.arch.lifecycle.MutableLiveData
++import android.arch.paging.DataSource
++import bp2go.kotlinbasics.model.User2
++import bp2go.kotlinbasics.model.network.GithubService
++import io.reactivex.disposables.CompositeDisposable
++
++class UsersDataSourceFactory(private val compositeDisposable: CompositeDisposable, private val githubService: GithubService) : DataSource.Factory<Long, User2>() {
++
++    val userDataSourceLiveData = MutableLiveData<UsersDataSource>()
++
++    override fun create(): DataSource<Long, User2> {
++        val source = UsersDataSource(githubService, compositeDisposable)
++        userDataSourceLiveData.postValue(source)
++        return source
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/bp2go/kotlinbasics/model/network/GithubService.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/model/network/GithubService.kt	(date 1534509049088)
++++ app/src/main/java/bp2go/kotlinbasics/model/network/GithubService.kt	(date 1534509049088)
+@@ -0,0 +1,12 @@
++package bp2go.kotlinbasics.model.network
++
++
++import bp2go.kotlinbasics.model.User2
++import io.reactivex.Single
++import retrofit2.http.GET
++import retrofit2.http.Query
++
++interface GithubService {
++    @GET("/users")
++    fun getUsers(@Query("since") userId: Long, @Query("per_page") perPage: Int): Single<List<User2>>
++}
+\ No newline at end of file
+Index: app/src/main/java/bp2go/kotlinbasics/model/User2.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/model/User2.kt	(date 1534509049027)
++++ app/src/main/java/bp2go/kotlinbasics/model/User2.kt	(date 1534509049027)
+@@ -0,0 +1,40 @@
++package bp2go.kotlinbasics.model
++
++import com.google.gson.annotations.SerializedName
++
++data class User2(
++    @SerializedName("login")
++    val login: String,
++    @SerializedName("id")
++    val id: Long = 0,
++    @SerializedName("avatar_url")
++    val avatarUrl: String,
++    @SerializedName("gravatar_id")
++    val gravatarId: String,
++    @SerializedName("url")
++    val url: String,
++    @SerializedName("html_url")
++    val htmlUrl: String,
++    @SerializedName("followers_url")
++    val followersUrl: String,
++    @SerializedName("following_url")
++    val followingUrl: String,
++    @SerializedName("gists_url")
++    val gistsUrl: String,
++    @SerializedName("starred_url")
++    val starredUrl: String,
++    @SerializedName("subscriptions_url")
++    val subscriptionsUrl: String,
++    @SerializedName("organizations_url")
++    val organizationsUrl: String,
++    @SerializedName("repos_url")
++    val reposUrl: String,
++    @SerializedName("events_url")
++    val eventsUrl: String,
++    @SerializedName("received_events_url")
++    val receivedEventsUrl: String,
++    @SerializedName("type")
++    val type: String,
++    @SerializedName("site_admin")
++    val siteAdmin: Boolean = false
++)
+\ No newline at end of file
+Index: app/src/main/java/bp2go/kotlinbasics/model/UserRepository.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/model/UserRepository.kt	(revision be57ddfbd2b5be034333f7bc08b9669316cd52bb)
++++ app/src/main/java/bp2go/kotlinbasics/model/UserRepository.kt	(date 1534511761993)
+@@ -22,8 +22,8 @@
+ 
+ 
+     fun getUser(userLogin: String?) : LiveData<User> {
+-        refreshUser(userLogin)
+-        return userDao.load(userLogin)
++        refreshUser(userLogin) //Lade von REST API wenn Bedinungen ok
++        return userDao.load(userLogin) //Lade Daten am Ende immer von Datenbank
+     }
+ 
+     fun refreshUser(userLogin: String?) : Unit{
+Index: app/src/main/java/bp2go/kotlinbasics/view/base/BaseViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/view/base/BaseViewModel.kt	(revision be57ddfbd2b5be034333f7bc08b9669316cd52bb)
++++ app/src/main/java/bp2go/kotlinbasics/view/base/BaseViewModel.kt	(date 1534511512971)
+@@ -10,6 +10,7 @@
+     fun getCompositeDisposable() = mCompositeDisposable
+ 
+     override fun onCleared() {
++        super.onCleared()
+         mCompositeDisposable.clear()
+         super.onCleared()
+     }
+Index: app/src/main/java/bp2go/kotlinbasics/view/home/userlist/UserListFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/view/home/userlist/UserListFragment.kt	(revision be57ddfbd2b5be034333f7bc08b9669316cd52bb)
++++ app/src/main/java/bp2go/kotlinbasics/view/home/userlist/UserListFragment.kt	(date 1534511608551)
+@@ -13,11 +13,17 @@
+ import bp2go.kotlinbasics.R
+ import bp2go.kotlinbasics.utils.toast
+ import bp2go.kotlinbasics.view.adapter.ListUserAdapter
++import bp2go.kotlinbasics.view.base.BaseFragment
+ import kotlinx.android.synthetic.main.fragment_user_list.view.*
+ import javax.inject.Inject
+ 
+ 
+-class UserListFragment : Fragment() {
++class UserListFragment : BaseFragment<UserListViewModel>() {
++
++    override fun getViewModel(): Class<UserListViewModel> {
++        return UserListViewModel::class.java
++    }
++
+     val users = ArrayList<String>()
+ 
+ 
+Index: app/src/main/java/bp2go/kotlinbasics/view/home/userlist/UserListViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/view/home/userlist/UserListViewModel.kt	(date 1534511512966)
++++ app/src/main/java/bp2go/kotlinbasics/view/home/userlist/UserListViewModel.kt	(date 1534511512966)
+@@ -0,0 +1,30 @@
++package bp2go.kotlinbasics.view.home.userlist
++
++import android.app.Application
++import android.arch.lifecycle.LiveData
++import android.arch.paging.LivePagedListBuilder
++import android.arch.paging.PagedList
++import bp2go.kotlinbasics.model.User2
++import bp2go.kotlinbasics.model.datasource.UsersDataSourceFactory
++import bp2go.kotlinbasics.model.network.GithubService
++import bp2go.kotlinbasics.view.base.BaseViewModel
++import javax.inject.Inject
++
++class UserListViewModel @Inject constructor(app: Application, private val githubService: GithubService) : BaseViewModel(app) {
++
++    var userList: LiveData<PagedList<User2>>
++    private val pageSize = 15
++
++    private val sourceFactory: UsersDataSourceFactory
++
++    init {
++        sourceFactory = UsersDataSourceFactory(mCompositeDisposable, githubService)
++        val config = PagedList.Config.Builder()
++                .setPageSize(pageSize)
++                .setInitialLoadSizeHint(pageSize*2)
++                .setEnablePlaceholders(false)
++                .build()
++        userList = LivePagedListBuilder<Long, User2>(sourceFactory,config).build()
++    }
++
++}
+\ No newline at end of file
+Index: app/src/main/java/bp2go/kotlinbasics/view/home/HomeFragmentsProvider.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/bp2go/kotlinbasics/view/home/HomeFragmentsProvider.kt	(revision be57ddfbd2b5be034333f7bc08b9669316cd52bb)
++++ app/src/main/java/bp2go/kotlinbasics/view/home/HomeFragmentsProvider.kt	(date 1534511833607)
+@@ -2,6 +2,7 @@
+ 
+ import bp2go.kotlinbasics.view.home.rxjava.RxJavaExamplesFragment
+ import bp2go.kotlinbasics.view.home.user.ShowUserFragment
++import bp2go.kotlinbasics.view.home.userlist.UserListFragment
+ import dagger.Module
+ import dagger.android.ContributesAndroidInjector
+ 
+@@ -13,4 +14,7 @@
+ 
+     @ContributesAndroidInjector
+     abstract fun bindRxJavaExamplesFragment(): RxJavaExamplesFragment
++
++    @ContributesAndroidInjector
++    abstract fun bindUserListFragment(): UserListFragment
+ }
+\ No newline at end of file

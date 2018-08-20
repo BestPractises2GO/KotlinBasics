@@ -10,26 +10,55 @@ import bp2go.kotlinbasics.model.network.GithubService
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class UsersDataSource(private val githubService: GithubService, private val compositeDisposable: CompositeDisposable): ItemKeyedDataSource<Long, User2>() {
     val networkState = MutableLiveData<NetworkState>()
+    val initialLoad = MutableLiveData<NetworkState>()
 
     /**
      * Keep Completable reference for the retry event
      */
     private var retryCompletable: Completable? = null
+
+    fun retry(){
+        if(retryCompletable != null){
+            compositeDisposable.add(retryCompletable!!
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({}, {throwable -> Log.d("HApp",throwable.message)}))
+        }
+    }
+
+
+
+
     /*
     You maybe wonder why i don’t use one of Rx most powerful features which specify the threads i want to work in or observe on.
     after some analysis i realize that the load methods called on background thread provided by Paging.
     The problem is you get the data on thread and load methods called on another thread.
      */
     override fun loadInitial(params: LoadInitialParams<Long>, callback: LoadInitialCallback<User2>) {
+        networkState.postValue(NetworkState.LOADING)
+        initialLoad.postValue(NetworkState.LOADING)
+
         compositeDisposable.add(githubService.getUsers(1, params.requestedLoadSize)
                 .subscribe(
-                        {users -> callback.onResult(users)},
-                        {throwable -> Log.i("apierr", throwable.message) }
+                        {users ->
+                            setRetry(null)
+                            networkState.postValue(NetworkState.LOADED)
+                            initialLoad.postValue(NetworkState.LOADED)
+                            callback.onResult(users)},
+                        {throwable ->
+                            //keep a Completable for future retry
+                            setRetry(Action {loadInitial(params, callback)})
+                            val error = NetworkState.error(throwable.message)
+                            //publish the error
+                            networkState.postValue(error)
+                            initialLoad.postValue(error)
+                            Log.i("apierr", throwable.message) }
                 ))
     }
 
@@ -49,14 +78,15 @@ class UsersDataSource(private val githubService: GithubService, private val comp
         return item.id
     }
 
-    fun retry(){
-        if(retryCompletable != null){
-            compositeDisposable.add(retryCompletable!!
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({}, {throwable -> Log.i("userapp",throwable.message)}))
+    private fun setRetry(action: Action?){
+        if (action == null) {
+            this.retryCompletable = null
+        } else {
+            this.retryCompletable = Completable.fromAction(action)
         }
     }
+
+
 
 
 }

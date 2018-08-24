@@ -9,6 +9,7 @@ import dagger.android.ContributesAndroidInjector
 @Module
 abstract class HomeFragmentsProvider {
 
+
     @ContributesAndroidInjector
     abstract fun bindShowUserFragment(): ShowUserFragment
 

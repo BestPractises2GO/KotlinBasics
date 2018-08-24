@@ -5,6 +5,7 @@ package bp2go.kotlinbasics.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.support.annotation.LayoutRes
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
@@ -14,11 +15,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 
-//FragmentTransaction.() = func() kann von Fragmenttransaction Methoden aufgerufen werden
-//FragmentTransaction = der Paramter hinter -> bedeutet, dass man nach func() FragmentTransaction Methoden aufrufen kann
-//Mann kann mit dem FragmentManager jetzt hinzugefügte MEthode inTransaction3 aufrufen
-//mit dem Aufruf der Methode inTransaction3 kann man in den Lambda Ausdruck eine Funktion für den
-// Platzhalter func() hinzufügen, z.B. add() oder replace()
+/*
+The good thing is that these functions are inline,
+which means that the function is substituted by the code of the function in compilation time,
+so it’s as efficient as writing the code directly into the place of the call.
+ */
+inline fun View.snack(message: String, length: Int = Snackbar.LENGTH_LONG, f: Snackbar.() -> Snackbar){
+Snackbar.make(this, message, length).f().show()
+}
+
+/*######################################################################################################################
+  FragmentTransaction.() = func() kann von FragmentTransaction Methoden aufgerufen werden
+  FragmentTransaction = der Paramter hinter -> bedeutet, dass man nach func() FragmentTransaction Methoden aufrufen kann
+  Mann kann mit dem FragmentManager jetzt hinzugefügte MEthode inTransaction3 aufrufen
+  mit dem Aufruf der Methode inTransaction3 kann man in den Lambda Ausdruck eine Funktion für den
+  Platzhalter func() hinzufügen, z.B. add() oder replace()
+#######################################################################################################################*/
 inline fun FragmentManager.inTransaction3(func: FragmentTransaction.() -> FragmentTransaction) {
      beginTransaction().func().commit()
     /*equivalent to

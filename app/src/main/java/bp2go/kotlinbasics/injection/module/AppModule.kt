@@ -9,7 +9,7 @@ import bp2go.kotlinbasics.App
 
 
 
-@Module(includes = arrayOf(ViewModelModule::class))
+@Module(includes = [ViewModelModule::class])
 class AppModule {
 
     @Provides

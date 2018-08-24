@@ -13,15 +13,24 @@ import bp2go.kotlinbasics.model.NetworkState
 import bp2go.kotlinbasics.model.Status
 import bp2go.kotlinbasics.model.User2
 import bp2go.kotlinbasics.utils.inflate
+
 import kotlinx.android.synthetic.main.item_network_state.view.*
 import kotlinx.android.synthetic.main.item_user.view.*
 import kotlinx.android.synthetic.main.list_user.view.*
 import javax.inject.Inject
 
 
-class ListUserAdapter constructor(private val retryCallback: () -> Unit) : PagedListAdapter<User2, RecyclerView.ViewHolder>(UserDiffCallback){
+class ListUserAdapter constructor(val mListener:ListUserAdapter.userListListener, private val retryCallback: () -> Unit) : PagedListAdapter<User2, RecyclerView.ViewHolder>(UserDiffCallback){
 
     private var networkState: NetworkState? = null
+
+    /*
+  * There are two layout types we define
+  * in this adapter:
+  * 1. progress view
+  * 2. data view
+  */
+
 
 
     companion object {
@@ -48,18 +57,21 @@ class ListUserAdapter constructor(private val retryCallback: () -> Unit) : Paged
       /*  val v = parent.inflate(R.layout.list_user)
         return SimpleViewHolder(v) */
         return when(viewType){
-            R.layout.item_user -> UserViewHolder.create(parent)
+            R.layout.item_user -> UserViewHolder.create(parent, mListener)
             R.layout.item_network_state -> NetworkStateViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("kenne den ViewType nicht")
         }
     }
 
+    //Hat zusätzliche Zeilen wenn es am laden/Verbindung abgebrochen und networkState nicht null ist
     private fun hasExtraRow(): Boolean {
         return networkState != null && networkState != NetworkState.LOADED
     }
 
     //(1)Gib das Layout für das jeweilige Element zurück
     override fun getItemViewType(position: Int): Int {
+        //Wenn es zusätzliche Zeilen und die ItemPosition beim letzten Item ist (durch Scroll),
+        //wird das Layout Item_network_State zurück gegeben
         return if (hasExtraRow() && position == itemCount - 1) {
             R.layout.item_network_state
         } else {
@@ -71,11 +83,13 @@ class ListUserAdapter constructor(private val retryCallback: () -> Unit) : Paged
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)  : Unit{
         Log.e("posi", holder.toString()+" "+position)
         when(getItemViewType(position)){
-            R.layout.item_user ->   (holder as UserViewHolder).bindData(getItem(position))
-            R.layout.item_network_state -> (holder as NetworkStateViewHolder).bindTo(networkState)
+            R.layout.item_user ->           (holder as UserViewHolder).bindData(getItem(position))
+            R.layout.item_network_state ->  (holder as NetworkStateViewHolder).bindTo(networkState)
         }
     }
 
+    //super(getItemCount() ruft den ItemCount, das vom PageList Objekt bereit gestellt wird
+    //Falls ExtraZeilen vorhanden sind, inkrementiere die Anzahl vom 1 (für die item_network_state Zeile)
     override fun getItemCount(): Int = super.getItemCount() + if(hasExtraRow()) 1 else 0
 
 
@@ -86,7 +100,8 @@ class ListUserAdapter constructor(private val retryCallback: () -> Unit) : Paged
         }
     }
 
-    class UserViewHolder(view: View) : RecyclerView.ViewHolder(view){
+    class UserViewHolder(view: View, val mListener: userListListener) : RecyclerView.ViewHolder(view){
+
         fun bindData(user: User2?)= with(itemView){
             UserName.text = user?.login
             GlideApp.with(context)
@@ -94,12 +109,13 @@ class ListUserAdapter constructor(private val retryCallback: () -> Unit) : Paged
                     .placeholder(R.mipmap.ic_launcher)
                     .into(UserAvatar)
             siteAdminIcon.visibility = if(user!!.siteAdmin) View.VISIBLE else View.GONE
+            setOnClickListener { mListener.onClick(user.login) }
         }
         companion object {
-            fun create(parent: ViewGroup): UserViewHolder {
+            fun create(parent: ViewGroup, mListener: userListListener): UserViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val view = layoutInflater.inflate(R.layout.item_user, parent, false)
-                return UserViewHolder(view)
+                return UserViewHolder(view, mListener)
             }
         }
     }
@@ -164,6 +180,8 @@ class ListUserAdapter constructor(private val retryCallback: () -> Unit) : Paged
     }
 
 
-
+    interface userListListener {
+        fun onClick(name: String)
+    }
 
 }

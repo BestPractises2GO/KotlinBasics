@@ -15,6 +15,11 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class UsersDataSource(private val githubService: GithubService, private val compositeDisposable: CompositeDisposable): ItemKeyedDataSource<Long, User2>() {
+    /* Step 1
+     * The networkState and initialLoading variables
+     * are for updating the UI when data is being fetched
+     * by displaying a progress bar
+     */
     val networkState = MutableLiveData<NetworkState>()
     val initialLoad = MutableLiveData<NetworkState>()
 
@@ -34,7 +39,12 @@ class UsersDataSource(private val githubService: GithubService, private val comp
 
 
 
-
+    /*
+     * Step 2: This method is responsible to load the data initially
+     * when app screen is launched for the first time.
+     * We are fetching the first 0-15 + setInitialLoadSizeHint data from the api
+     * and passing it via the callback method to the UI.
+     */
     /*
     You maybe wonder why i don’t use one of Rx most powerful features which specify the threads i want to work in or observe on.
     after some analysis i realize that the load methods called on background thread provided by Paging.
@@ -43,6 +53,7 @@ class UsersDataSource(private val githubService: GithubService, private val comp
     override fun loadInitial(params: LoadInitialParams<Long>, callback: LoadInitialCallback<User2>) {
         networkState.postValue(NetworkState.LOADING)
         initialLoad.postValue(NetworkState.LOADING)
+
 
         compositeDisposable.add(githubService.getUsers(1, params.requestedLoadSize)
                 .subscribe(
@@ -62,11 +73,30 @@ class UsersDataSource(private val githubService: GithubService, private val comp
                 ))
     }
 
+    /*
+ * Step 3: This method it is responsible for the subsequent call to load the data page wise.
+ * This method is executed in the background thread
+ * We are fetching the next page data from the api
+ * and passing it via the callback method to the UI.
+ * The "params.key" variable will have the updated value.
+ */
     override fun loadAfter(params: LoadParams<Long>, callback: LoadCallback<User2>) {
+        networkState.postValue(NetworkState.LOADING)
+        //get users from the api after id
         compositeDisposable.add(githubService.getUsers(params.key, params.requestedLoadSize)
                 .subscribe (
-                        {users -> callback.onResult(users)},
-                        {throwable ->  Log.i("apierr",throwable.message)}
+                        {users ->
+                            //bei PagedKeyedDataSource würde man nextKey:Long = params.key+1 setzen
+                            // und dann callback.onResult(users, nextKey) setzen
+                            // clear retry since last request succeeded
+                            setRetry(null)
+                            networkState.postValue(NetworkState.LOADED)
+                            callback.onResult(users)},
+                        {throwable ->
+                            //keep a Completable for futre retry
+                            setRetry(Action { loadAfter(params, callback) })
+                            networkState.postValue(NetworkState.error(throwable.message))
+                            Log.i("apierr",throwable.message)}
                 ))
     }
 

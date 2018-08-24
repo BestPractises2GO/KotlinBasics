@@ -9,7 +9,7 @@ import dagger.android.ContributesAndroidInjector
 abstract class ActivityBuilder {
 
 
-@ContributesAndroidInjector(modules = arrayOf(HomeFragmentsProvider::class))
+@ContributesAndroidInjector(modules = [HomeFragmentsProvider::class])
 abstract fun bindMainActivity(): MainActivity
 
 }

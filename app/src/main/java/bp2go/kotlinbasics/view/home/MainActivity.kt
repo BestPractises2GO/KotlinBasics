@@ -8,14 +8,25 @@ import android.util.Log
 import bp2go.kotlinbasics.R
 import bp2go.kotlinbasics.utils.addFragment
 import bp2go.kotlinbasics.utils.addFragmentTag
+import bp2go.kotlinbasics.utils.toast
 import bp2go.kotlinbasics.view.base.BaseActivity
+import bp2go.kotlinbasics.view.home.listener.ExampleListener
 import bp2go.kotlinbasics.view.home.user.ShowUserFragment
 
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), ExampleListener {
+    override fun onButtonClick(msg: String) {
+        toast(msg+" "+this::class, this)
+        //Hier könnte ich jetzt z.B. Daten zu einem anderen Fragment in die Methode senden
+    }
 
     private val USER_LOGIN ="JakeWharton"
 
+    fun onArticleSelected(position: Int){
+
+    }
+
+    //ToDo: Navigation Drawer implementieren
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

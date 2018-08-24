@@ -12,6 +12,7 @@ class UsersDataSourceFactory(private val compositeDisposable: CompositeDisposabl
 
     override fun create(): DataSource<Long, User2> {
         val source = UsersDataSource(githubService, compositeDisposable)
+        //LiveData von UserDataSource postet eine instanz von UserDataSource
         userDataSourceLiveData.postValue(source)
         return source
     }

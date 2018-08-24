@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import bp2go.kotlinbasics.R
 import bp2go.kotlinbasics.view.home.parta.PartaFragment
 import bp2go.kotlinbasics.view.adapter.TabAdapter
+import bp2go.kotlinbasics.view.home.maps.MapsFragment
 import bp2go.kotlinbasics.view.home.rxjava.RxJavaExamplesFragment
 import bp2go.kotlinbasics.view.home.user.ShowUserFragment
 import bp2go.kotlinbasics.view.home.userlist.UserListFragment
@@ -42,7 +43,7 @@ class TabsHomeFragment : Fragment() {
         //über Activity wäre es dann der supportFragmentMAnager
         tabAdapter = TabAdapter(childFragmentManager)
         //ScreenPageLimit für höhere Performanz
-        view.view_pager.offscreenPageLimit = 4
+        view.view_pager.offscreenPageLimit = 5
         addFragmentsToViewPager(view.view_pager)
         //Füge dem Tablayout den ViewPager zu
         view.home_tabLayout.setupWithViewPager(view.view_pager)
@@ -70,6 +71,7 @@ class TabsHomeFragment : Fragment() {
         tabAdapter.addFragment(PartaFragment(), "Parta")
         tabAdapter.addFragment(RxJavaExamplesFragment(), "Rx Beispiele")
         tabAdapter.addFragment(UserListFragment(), "Recycler")
+        tabAdapter.addFragment(MapsFragment(), "Maps")
 
         //ViewPager Adapter erhält TabAdapter mit den Fragmenten, die innerhalb des TabAdapter hinzugefügt worden sind
         viewPager.adapter = tabAdapter

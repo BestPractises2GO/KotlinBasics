@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_cut"
+        android:title="CUT"
+        android:icon="@android:drawable/ic_delete"/>
+    <item
+        android:id="@+id/action_copy"
+        android:title="COPY"
+        android:icon="@android:drawable/ic_dialog_alert"/>
+    <item
+        android:id="@+id/action_insert"
+        android:title="INSERT"
+        android:icon="@android:drawable/ic_menu_share"/>
+
+</menu>

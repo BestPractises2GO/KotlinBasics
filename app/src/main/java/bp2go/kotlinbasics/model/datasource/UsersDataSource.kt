@@ -51,13 +51,15 @@ class UsersDataSource(private val githubService: GithubService, private val comp
     The problem is you get the data on thread and load methods called on another thread.
      */
     override fun loadInitial(params: LoadInitialParams<Long>, callback: LoadInitialCallback<User2>) {
+        // update network states.
+        // we also provide an initial load state to the listeners so that the UI can know when the
+        // very first list is loaded.
         networkState.postValue(NetworkState.LOADING)
         initialLoad.postValue(NetworkState.LOADING)
 
 
         compositeDisposable.add(githubService.getUsers(1, params.requestedLoadSize)
-                .subscribe(
-                        {users ->
+                .subscribe({users ->
                             setRetry(null)
                             networkState.postValue(NetworkState.LOADED)
                             initialLoad.postValue(NetworkState.LOADED)
@@ -84,8 +86,7 @@ class UsersDataSource(private val githubService: GithubService, private val comp
         networkState.postValue(NetworkState.LOADING)
         //get users from the api after id
         compositeDisposable.add(githubService.getUsers(params.key, params.requestedLoadSize)
-                .subscribe (
-                        {users ->
+                .subscribe ({users ->
                             //bei PagedKeyedDataSource würde man nextKey:Long = params.key+1 setzen
                             // und dann callback.onResult(users, nextKey) setzen
                             // clear retry since last request succeeded

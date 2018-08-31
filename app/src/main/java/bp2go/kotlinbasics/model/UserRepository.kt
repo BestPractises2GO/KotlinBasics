@@ -27,6 +27,7 @@ class UserRepository @Inject constructor(val webservice: UserWebservice, val use
     }
 
     fun refreshUser(userLogin: String?) : Unit{
+
         executor.execute{
             val userExists: Boolean = (userDao.hasUser(userLogin, getMaxRefreshTime(Date())) != null)
 

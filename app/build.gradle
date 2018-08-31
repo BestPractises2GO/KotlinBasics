@@ -54,6 +54,7 @@ dependencies {
 
     // LiveData & ViewModel
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+    implementation "android.arch.core:core-testing:1.1.1"
 
     //Room
     implementation "android.arch.persistence.room:runtime:1.1.1"

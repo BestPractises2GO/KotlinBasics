@@ -10,6 +10,12 @@ import javax.inject.Inject
 
 
 class RepoViewViewModel @Inject constructor(app: Application, val userRepository2: UserRepository2) : BaseViewModel(app) {
+    /**
+     * A switchMap uses a MediatorLiveData internally,
+     * so it’s important to be familiar with it because you need to use it when you want to combine multiple sources of LiveData:
+     * https://medium.com/androiddevelopers/livedata-beyond-the-viewmodel-reactive-patterns-using-transformations-and-mediatorlivedata-fda520ba00b7
+     */
+
     //works with Repo
     private val organizationIdLiveData = MutableLiveData<String>()
 

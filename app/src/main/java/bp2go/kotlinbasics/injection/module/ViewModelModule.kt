@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import bp2go.kotlinbasics.injection.ViewModelFactory
 import bp2go.kotlinbasics.injection.ViewModelKey
+import bp2go.kotlinbasics.view.home.repoview.RepoViewViewModel
 import bp2go.kotlinbasics.view.home.rxjava.RxJavaExamplesViewModel
 import bp2go.kotlinbasics.view.home.user.UserProfileViewModel
 import bp2go.kotlinbasics.view.home.userlist.UserListViewModel
@@ -27,6 +28,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(UserListViewModel::class)
     abstract fun provideUserListViewModel(userListViewModel: UserListViewModel) : ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RepoViewViewModel::class)
+    abstract fun provideRepoViewViewModel(repoViewModel: RepoViewViewModel) : ViewModel
 
     //Factory binden
     @Binds

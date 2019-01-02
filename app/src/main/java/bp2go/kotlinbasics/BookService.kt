@@ -23,9 +23,6 @@ class BookServiceImpl : BookService{
         println("$bookId $memberId")
     }
 
-
-
-
     override fun inStock(bookId: Int): Boolean {
         if(bookId == 100) {
             return true

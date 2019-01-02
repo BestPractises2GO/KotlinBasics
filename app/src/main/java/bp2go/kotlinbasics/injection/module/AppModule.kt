@@ -9,6 +9,9 @@ import bp2go.kotlinbasics.App
 
 
 
+const val SCHEDULER_MAIN_THREAD = "mainThread"
+const val SCHEDULER_IO = "io"
+
 @Module(includes = [ViewModelModule::class])
 class AppModule {
 

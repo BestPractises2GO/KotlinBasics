@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
 import java.util.*
 
 class InteractorTest {
@@ -17,11 +18,11 @@ class InteractorTest {
     @Test
     fun testInteractor() {
         val response = User("1", "1", "pfad", "name", "no", "no", Date())
-        whenever(apiService.getUserRx("1")).thenReturn(Single.just(response))
+        whenever(apiService.getUserRx(anyString())).thenReturn(Single.just(response))
 
-        sut.getUser("1")
+        sut.getUser(anyString())
 
-        val testObservable = apiService.getUserRx("1")
+        val testObservable = apiService.getUserRx(anyString())
         val testObserver = testObservable.test()
         testObserver.assertValue(response)
     }
@@ -29,10 +30,10 @@ class InteractorTest {
     @Test
     fun testInteractor_error() {
         val response = Throwable("error msg")
-        whenever(apiService.getUserRx("1")).thenReturn(Single.error(response))
+        whenever(apiService.getUserRx(anyString())).thenReturn(Single.error(response))
 
-        sut.getUser("1")
-        val testObservable = apiService.getUserRx("1")
+        sut.getUser(anyString())
+        val testObservable = apiService.getUserRx(anyString())
         val testObserver = testObservable.test()
         testObserver.assertError(response)
     }

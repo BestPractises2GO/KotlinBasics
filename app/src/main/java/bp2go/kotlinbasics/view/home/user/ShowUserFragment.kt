@@ -12,10 +12,17 @@ import bp2go.kotlinbasics.injection.module.GlideApp
 import bp2go.kotlinbasics.model.User
 import bp2go.kotlinbasics.view.base.BaseFragment
 import com.bumptech.glide.request.RequestOptions
+import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_show_user.*
 
 
 class ShowUserFragment : BaseFragment<UserProfileViewModel>() {
+
+    private fun dataStoreMethod(){
+        Realm.getDefaultInstance().use{realmTransaction ->
+
+        }
+    }
 
 
     companion object UidKey{
